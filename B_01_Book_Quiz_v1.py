@@ -1,7 +1,9 @@
-from tkinter import *
-from functools import partial
 import csv
 import random
+from functools import partial
+from tkinter import *
+
+
 def round_ans(val):
     """
     Rounds temperatures to the nearest degree
@@ -12,7 +14,11 @@ def round_ans(val):
 
 
 def get_questions():
-    file = open("famous_books_authors(books).csv", "r")
+    """
+    returns all csv rows but also gets rid of the
+    first row which shows what the column is for
+    """
+    file = open("books_data_v2.csv", "r")
     all_questions = list(csv.reader(file, delimiter=","))
     file.close()
 
@@ -21,6 +27,9 @@ def get_questions():
 
 
 def get_round_questions():
+    """
+    Gets 4 random questions from the csv
+    """
     file = open("famous_books_authors(books).csv", "r")
     all_questions = list(csv.reader(file, delimiter=","))
     file.close()
@@ -61,8 +70,6 @@ class Play:
 
         self.game_frame = Frame(self.play_box, bg='white')
         self.game_frame.grid()
-
-
 
         self.row_count = 1
 
@@ -114,11 +121,11 @@ class Play:
         self.to_stat_button = control_ref_list[2]
         self.to_end_button = control_ref_list[3]
 
-
         self.question_button_ref = []
         self.button_color_list = ["#ff3355", "#45a3e5", "#ffc00a", "#66bf39"]
-        for item in range(0, 4):
-            self.question_button = Button(self.answer_frame, font=("Arial", 12), bg=self.button_color_list[item], text="question Name", width=30,
+        for item in range(0, 4):  # Colors the buttons from 1 to 4 based off the list above
+            self.question_button = Button(self.answer_frame, font=("Arial", 12), bg=self.button_color_list[item],
+                                          text="question Name", width=30,
                                           command=partial(self.round_results, item), fg="#000")
             self.question_button.grid(row=item // 2, column=item % 2, padx=10, pady=10)
             self.question_button_ref.append(self.question_button)
@@ -126,6 +133,10 @@ class Play:
         self.new_round()
 
     def new_row(self):
+        """
+        Makes/adds a new row so that if I add another row in between.
+        I don't have to set every row a different number
+        """
         self.row_count += 1
         return self.row_count - 1
 
@@ -148,12 +159,16 @@ class Play:
 
         self.question_label.config(text="What did " + self.round_question + " write?", bg='white')
         for count, item in enumerate(self.question_button_ref):
-            correct = self.picked_question == self.round_quiz_list[count] # Check if button is the correct answer
-            item.config(text=self.round_quiz_list[count][0], state=NORMAL, command=partial(self.round_results, correct, item))
+            correct = self.picked_question == self.round_quiz_list[count]  # Check if button is the correct answer
+            item.config(text=self.round_quiz_list[count][0], state=NORMAL,
+                        command=partial(self.round_results, correct, item))
             self.correct_button = correct and item or self.correct_button
         self.next_button.config(state=DISABLED)
 
     def round_results(self, correct, button):
+        """check if the answer is correct or wrong.
+        Check if the rounds wanted are equal to rounds played to end the game
+        Enables and disables buttons"""
         if correct:
             result_text = f"Success you earned a point"
             result_bg = "#82B366"
@@ -211,7 +226,6 @@ class Play:
         Stats(self, stats_bundle)
 
 
-
 class StartGame:
     """
     Initial Game interface (asks users how many rounds they
@@ -219,10 +233,6 @@ class StartGame:
     """
 
     def __init__(self):
-        """
-        Gets number of rounds per user
-        """
-
         self.start_frame = Frame(padx=10, pady=10)
         self.start_frame.grid()
 
@@ -261,6 +271,8 @@ class StartGame:
         self.play_button.grid(row=1, column=0)
 
     def check_rounds(self):
+        """checks if the user has not inputted lower than 1 or a non int into the round picking input
+        Goes to the game if the conditions meet"""
         rounds_wanted = self.num_rounds_entry.get()
 
         self.choose_label.config(fg="#009900", font=("Arial", "12", "bold"))
@@ -288,8 +300,12 @@ class StartGame:
             # Delete characters starting from the 0(th) to max(th)
             self.num_rounds_entry.delete(0, END)
 
+
 class DisplayHints:
     def __init__(self, partner):
+        """
+        Tells you how to play the game in a smaller window
+        """
         # setup dialogue box
         background = "#ffe6cc"
         self.hint_box = Toplevel()
@@ -324,12 +340,15 @@ class DisplayHints:
         partner.to_hint_button.config(state=NORMAL)
         self.hint_box.destroy()
 
+
 class Stats:
+    """
+    Shows user their round statistics in a window such as wins, average, and total, and shows them if they have 100% or 0%
+    """
     def __init__(self, partner, all_stats_info):
         rounds_won = all_stats_info[0]
         rounds_played = all_stats_info[1]
         rounds_wanted = all_stats_info[2]
-
 
         # setup dialogue box
         self.stats_box = Toplevel()
@@ -350,10 +369,10 @@ class Stats:
         total_score_string = f"Total Score {rounds_won}"
 
         if rounds_won == rounds_wanted:
-            comment_string = "Amazing! you got the highest possible score!"
+            comment_string = "Amazing! you got the highest possible score!" # if the win count matches rounds wanted
             comment_color = "#D5E8D4"
         elif rounds_won == 0:
-            comment_string = ("Oops - You (the looser) lost every round! "
+            comment_string = ("Oops - You (the looser) lost every round! " # if the win count is 0
                               "You might want to look at the hints!")
             comment_color = "#F8CECC"
         else:
@@ -395,6 +414,7 @@ class Stats:
     def close_stats(self, partner):
         partner.to_stat_button.config(state=NORMAL)
         self.stats_box.destroy()
+
 
 if __name__ == '__main__':
     root = Tk()
