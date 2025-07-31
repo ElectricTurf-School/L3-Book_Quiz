@@ -407,17 +407,14 @@ class Stats:
 
         average_score_string = f"Whole Score: {rounds_won}/{rounds_wanted} ({whole_score:.0f}%)\n"
 
-        normal_font = ("Arial", "14")
-        comment_font = ("arial", "13")
-
         all_stats_strings = [
             ["Statistics", c.font_16_bold, ""],
-            [rounds_played_string, normal_font, "N"],
-            [success_string, normal_font, "W"],
-            [total_score_string, normal_font, "W"],
-            [comment_string, comment_font, "W"],
+            [rounds_played_string, c.normal_font, "N"],
+            [success_string, c.normal_font, "W"],
+            [total_score_string, c.normal_font, "W"],
+            [comment_string, c.comment_font, "W"],
             ["\nRound Stats", c.font_16_bold, "w"],
-            [average_score_string, normal_font, "W"]
+            [average_score_string, c.normal_font, "W"]
         ]
 
         stats_label_ref_list = []
