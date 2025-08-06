@@ -8,32 +8,11 @@ import all_constants as c
 from Book_Author_Quiz.all_constants import font_10_bold
 
 
-def round_ans(val):
-    """
-    Rounds temperatures to the nearest degree
-    :param val: Number to be rounded
-    :return: Number to the nearest degree
-    """
-    return int("{:.0f}".format((val * 2 + 1) // 2))
-
-
-def get_questions():
-    """
-    returns all csv rows but also gets rid of the
-    first row which shows what the column is for
-    """
-    file = open("books_data_v2.csv", "r")
-    all_questions = list(csv.reader(file, delimiter=","))
-    file.close()
-
-    # remove the first row
-    all_questions.pop(0)
-
-
 def get_round_questions():
     """
     Gets 4 random questions from the csv
     """
+    #Opens the file to acess the data in it
     file = open("books_data_v2.csv", "r")
     all_questions = list(csv.reader(file, delimiter=","))
     file.close()
@@ -42,10 +21,10 @@ def get_round_questions():
     all_questions.pop(0)
 
     round_questions = []
-
+    # Loops until it gets 4 random questions
+    potential_question = random.choice(all_questions)
     while len(round_questions) < 4:
-        potential_question = random.choice(all_questions)
-
+        # checks if it is a duplicate, if it is it'll loop again until it has all 4 answers
         if potential_question not in round_questions:
             round_questions.append(potential_question)
 
@@ -54,7 +33,9 @@ def get_round_questions():
 
 class Play:
     def __init__(self, how_many):
-
+        """
+        Main game window class
+        """
         # == Variable defining ==
         # Storage the current question status such the correct button of the current round used in the results
         self.correct_button = None
@@ -92,7 +73,7 @@ class Play:
             [self.top_bar_frame, f"Question", None, 1, 0],
         ]
         label_ref_list = []
-
+        # Creates all the labels in the list above
         for item in play_label_list:
             make_label = Label(item[0], text=item[1], bg=item[2], font=c.font_16_bold, fg="#000000")
             make_label.grid(row=item[0] == self.game_frame and self.new_row() or item[3], column=item[4])
@@ -126,7 +107,7 @@ class Play:
                 make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
-
+        # Get reference of button to configure it later
         self.next_button = control_ref_list[0]
         self.to_hint_button = control_ref_list[1]
         self.to_stat_button = control_ref_list[2]
@@ -393,11 +374,11 @@ class Stats:
         total_score_string = f"Total Score {rounds_won}"
 
         if rounds_won == rounds_wanted:
-            # if the win count matches rounds wanted
+            # if the win count matches rounds wanted it means they have 100%, the program will tell them
             comment_string = "Amazing! you got the highest possible score!"
             comment_color = "#D5E8D4"
         elif rounds_won == 0:
-            # if the win count is 0
+            # if the win count is 0, inform the user they lost every round
             comment_string = ("Oops - You (the looser) lost every round! " 
                               "You might want to look at the hints!")
             comment_color = "#F8CECC"
