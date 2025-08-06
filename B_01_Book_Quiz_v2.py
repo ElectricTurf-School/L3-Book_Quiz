@@ -89,6 +89,7 @@ class Play:
         self.options_frame.grid(row=self.new_row())
 
         # (Frame | Text | bg | Command | Width | Row | Column)
+        # All the data to make the control buttons when the program loops through this list
         control_button_list = [
             [self.options_frame, "Next Round", "#0057D8", self.new_round, 21, 0, 2],
             [self.options_frame, "Hints", "#FF8000", self.to_hint, 10, 0, 1],
@@ -101,9 +102,11 @@ class Play:
             make_control_button = Button(item[0], text=item[1], bg=item[2], command=item[3],
                                          font=c.font_16_bold, fg="#FFFFFF", width=item[4])
             try:
+                # Puts button in a custom XY position instead of grid if string is 'absolute
                 if item[7] == 'absolute':
                     make_control_button.place(x=item[5], y=item[6])
             except IndexError:
+                # Puts button in the correct place within the grid
                 make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
@@ -118,6 +121,8 @@ class Play:
         self.button_color_list = ["#ff3355", "#45a3e5", "#ffc00a", "#66bf39"]
         # Colors the buttons from 1 to 4 based off the list above
         for item in range(0, 4):
+            # Also has a placeholder 'Question name' so that there isint nothing there and is a
+            # placeholder if the csv loading time is slow
             self.question_button = Button(self.answer_frame, font=c.font_12, bg=self.button_color_list[item],
                                           text="question Name", width=30,
                                           command=partial(self.round_results, item), fg="#000")
@@ -140,13 +145,13 @@ class Play:
         """
         for count, item in enumerate(self.question_button_ref):
             item.config(bg=self.button_color_list[count])
-
+        # when new round, add another round to the round counter
         rounds_played = self.rounds_played.get()
         rounds_played += 1
         self.rounds_played.set(rounds_played)
 
         self.round_quiz_list = get_round_questions()
-
+        # Header (Status on how many rounds they have played and how many they have left
         self.heading_label.config(text=f"Round {rounds_played} out of {self.rounds_wanted.get()}", bg='white')
         self.picked_question = random.choice(self.round_quiz_list)
         self.round_question = self.picked_question[1]
@@ -167,10 +172,12 @@ class Play:
         Check if the rounds wanted are equal to rounds played to end the game
         Enables and disables buttons"""
         if correct:
+            # If the user gets the round question correct, the game will have a green note at the top notifying them
             result_text = f"Success you earned a point"
             result_bg = "#82B366"
             self.score += 1
         else:
+            # If the user gets the question wrong, the game will add a red not to the top saying they lost that round.
             result_text = f"Oops you did not get the answer right."
             result_bg = "#F8CECC"
 
@@ -225,8 +232,10 @@ class Play:
         Displays stats for playing
         :return:
         """
-
+        # Sends the stats data like the score, rounds played, and rounds wanted to calculate the percentages.
         stats_bundle = [self.score, self.rounds_played.get(), self.rounds_wanted.get()]
+        # open stats class with partner (play class) which will enable us to disable/enable the stats button
+        # from the stat class and data
         Stats(self, stats_bundle)
 
 
@@ -283,10 +292,11 @@ class StartGame:
 
         error = "Oops - Please choose a whole number more than zero"
         has_errors = "no"
-
+        # Check if the user had put in a string higher than 0 and not decimals, (must be a whole number)
         try:
             rounds_wanted = int(rounds_wanted)
             if rounds_wanted > 0:
+                # Begin game if the conditions are met and hides start game window
                 Play(rounds_wanted)
                 root.withdraw()
             else:
@@ -295,6 +305,7 @@ class StartGame:
         except ValueError:
             has_errors = "yes"
 
+        # if the input was done incorrectly, the user will have to try again.
         if has_errors == "yes":
             self.choose_label.config(text=error, fg="#990000", font=font_10_bold)
 
@@ -319,7 +330,7 @@ class DisplayHints:
         # Create the main grid to hold child elements
         self.hint_frame = Frame(self.hint_box, width=300, height=200)
         self.hint_frame.grid()
-
+        # Sets hint heading
         self.hint_heading_label = Label(self.hint_frame, text="hint / Info", font=c.font_14_bold)
         self.hint_heading_label.grid(row=0)
         # Hint text
@@ -351,6 +362,7 @@ class Stats:
     """
 
     def __init__(self, partner, all_stats_info):
+        # Gets given stats variables
         rounds_won = all_stats_info[0]
         rounds_played = all_stats_info[1]
         rounds_wanted = all_stats_info[2]
@@ -359,15 +371,16 @@ class Stats:
         self.stats_box = Toplevel()
 
         partner.to_stat_button.config(state=DISABLED)
-
+        # If the user uses the X button instead of the close button, it will enable the stats button in the play class anyway
         self.stats_box.protocol("WM_DELETE_WINDOW", partial(self.close_stats, partner))
-
+        # Create stat background/frame
         self.stats_frame = Frame(self.stats_box, width=300, height=200)
         self.stats_frame.grid()
 
+        # get percentage based on variables
         success_rate = rounds_won / rounds_played * 100
-
         whole_score = rounds_won / rounds_wanted * 100
+        # Turns it into a readable string
         success_string = (f"Success rate {rounds_won} / {rounds_played}"
                           f" ({success_rate:.0f}%)")
         rounds_played_string = f"Answered {rounds_played} out of {rounds_wanted} Questions"
@@ -387,7 +400,7 @@ class Stats:
             comment_color = "#F0F0F0"
 
         average_score_string = f"Whole Score: {rounds_won}/{rounds_wanted} ({whole_score:.0f}%)\n"
-
+        # list of all UI data to loop through and create, W or w decides where it is anchored
         all_stats_strings = [
             ["Statistics", c.font_16_bold, ""],
             [rounds_played_string, c.normal_font, "N"],
@@ -408,12 +421,12 @@ class Stats:
 
         stats_comment_label = stats_label_ref_list[4]
         stats_comment_label.config(bg=comment_color)
-
+        # Dismiss button to close the hint class
         self.dismiss_button = Button(self.stats_frame, font=c.font_12_bold,
                                      text="Dismiss", bg="#CC6600", fg="#FFFFFF",
                                      command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=9, padx=10, pady=10)
-
+    # Function that gets triggered by the exit buttons and enables the hint button in the play class again
     def close_stats(self, partner):
         partner.to_stat_button.config(state=NORMAL)
         self.stats_box.destroy()
