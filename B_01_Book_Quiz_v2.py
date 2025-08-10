@@ -8,28 +8,18 @@ import all_constants as c
 
 
 def get_round_questions():
-    """
-    Gets 4 random questions from the csv
-    and returns it for the answer buttons
-    """
-    # Opens the file to access the data in it
-    file = open("books_data_v2.csv", "r")
-    all_questions = list(csv.reader(file, delimiter=","))
-    file.close()
+    with open("books_data_v2.csv", "r") as file:
+        all_questions = list(csv.reader(file, delimiter=","))
 
-    # remove the first row
     all_questions.pop(0)
 
     round_questions = []
-    # Loops until it gets 4 random questions
-    potential_question = random.choice(all_questions)
     while len(round_questions) < 4:
-        # checks if it is a duplicate, if it is it'll loop again until it has all 4 answers
+        potential_question = random.choice(all_questions)
         if potential_question not in round_questions:
             round_questions.append(potential_question)
 
     return round_questions
-
 
 class Play:
     def __init__(self, how_many):
