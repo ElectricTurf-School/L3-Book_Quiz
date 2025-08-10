@@ -5,7 +5,6 @@ from tkinter import *
 
 # Constants include fonts which act as a global variable
 import all_constants as c
-from Book_Author_Quiz.all_constants import font_10_bold
 
 
 def get_round_questions():
