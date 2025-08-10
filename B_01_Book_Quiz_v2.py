@@ -10,8 +10,9 @@ import all_constants as c
 def get_round_questions():
     """
     Gets 4 random questions from the csv
+    and returns it for the answer buttons
     """
-    #Opens the file to acess the data in it
+    # Opens the file to access the data in it
     file = open("books_data_v2.csv", "r")
     all_questions = list(csv.reader(file, delimiter=","))
     file.close()
@@ -33,7 +34,8 @@ def get_round_questions():
 class Play:
     def __init__(self, how_many):
         """
-        Main game window class
+        Main game window class with the game in it
+        Triggers after the user picks the round
         """
         # == Variable defining ==
         # Storage the current question status such the correct button of the current round used in the results
@@ -133,7 +135,7 @@ class Play:
     def new_row(self):
         """
         Makes/adds a new row so that if I add another row in between.
-        I don't have to set every row a different number
+        I don't have to set every row a different number it's automatic
         """
         self.row_count += 1
         return self.row_count - 1
@@ -214,6 +216,9 @@ class Play:
             item.config(state=DISABLED)
 
     def close_play(self):
+        """
+        Close the play class when the user clicks end or finishes the game
+        """
         # reshow root (i.e.: choose rounds) and end current
         # game / allow new game to start
         root.deiconify()
@@ -306,7 +311,7 @@ class StartGame:
 
         # if the input was done incorrectly, the user will have to try again.
         if has_errors == "yes":
-            self.choose_label.config(text=error, fg="#990000", font=font_10_bold)
+            self.choose_label.config(text=error, fg="#990000", font=c.font_10_bold)
 
             self.num_rounds_entry.config(bg="#F4CCCC")
 
