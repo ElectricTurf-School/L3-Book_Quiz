@@ -8,12 +8,19 @@ import all_constants as c
 
 
 def get_round_questions():
+    """
+        Gets 4 random questions from the csv
+        and returns it for the answer buttons
+        """
+    # Opens the file to access the data in it
     with open("books_data_v2.csv", "r") as file:
         all_questions = list(csv.reader(file, delimiter=","))
-
+    # remove header (top row off csv
     all_questions.pop(0)
 
     round_questions = []
+    # Loops through the random selected questions int he csv, if it hasn't been picked before it will add it to the
+    # picked questions until it has 4 valid questions
     while len(round_questions) < 4:
         potential_question = random.choice(all_questions)
         if potential_question not in round_questions:
